@@ -1,57 +1,29 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8">
-  <title>Telegram</title>
+<audio id="scream1" src="https://www.myinstants.com/media/sounds/movie_1.mp3"></audio>
+<audio id="scream2" src="https://www.myinstants.com/media/sounds/wilhelm-scream.mp3"></audio>
 
-  <style>
-    body {
-      margin: 0;
-      background: #0e1621;
-      color: white;
-      font-family: Arial;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+<script>
+setTimeout(() => {
+  // первый резкий момент
+  document.body.style.background = "white";
 
-    .box {
-      text-align: center;
-    }
+  setTimeout(() => {
+    document.body.innerHTML = `
+      <img src="https://i.imgur.com/Z6XQZ6v.jpg"
+      style="width:100vw;height:100vh;object-fit:cover;">
+    `;
 
-    .loader {
-      border: 6px solid #ccc;
-      border-top: 6px solid #2AABEE;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      animation: spin 1s linear infinite;
-      margin: 20px auto;
-    }
+    let a1 = document.getElementById("scream1");
+    a1.volume = 0.6;
+    a1.play();
 
-    @keyframes spin {
-      100% { transform: rotate(360deg); }
-    }
-  </style>
-</head>
-
-<body>
-  <div class="box">
-    <h2>Подключение к группе...</h2>
-    <div class="loader"></div>
-  </div>
-
-  <audio id="scream" src="https://www.myinstants.com/media/sounds/scream.mp3"></audio>
-
-  <script>
+    // второй скример через секунду (добивает)
     setTimeout(() => {
-      document.body.innerHTML = `
-        <img src="https://i.imgur.com/Z6XQZ6v.jpg" 
-        style="width:100vw;height:100vh;object-fit:cover;">
-      `;
-      document.getElementById("scream").play();
-    }, 4000);
-  </script>
-</body>
-</html>
+      let a2 = document.getElementById("scream2");
+      a2.volume = 0.7;
+      a2.play();
+    }, 1000);
+
+  }, 100);
+
+}, 6000);
+</script>
