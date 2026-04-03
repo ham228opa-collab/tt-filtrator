@@ -1,29 +1,185 @@
-<audio id="scream1" src="https://www.myinstants.com/media/sounds/movie_1.mp3"></audio>
-<audio id="scream2" src="https://www.myinstants.com/media/sounds/wilhelm-scream.mp3"></audio>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>ХАЧ ПОДАВИСЬ ШАУРМОЙ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
 
-<script>
-setTimeout(() => {
-  // первый резкий момент
-  document.body.style.background = "white";
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at 30% 20%, #1a1a2e, #0a0a0a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Impact', 'Arial Black', 'Helvetica Bold', 'Franklin Gothic Heavy', sans-serif;
+            cursor: pointer;
+            overflow: hidden;
+            position: relative;
+        }
 
-  setTimeout(() => {
-    document.body.innerHTML = `
-      <img src="https://i.imgur.com/Z6XQZ6v.jpg"
-      style="width:100vw;height:100vh;object-fit:cover;">
-    `;
+        /* Огромная надпись */
+        .huge-text {
+            font-size: 8vw;
+            font-weight: 900;
+            text-align: center;
+            color: #ff8800;
+            text-shadow: 
+                6px 6px 0 #aa3300,
+                12px 12px 0 #551100,
+                20px 20px 30px rgba(0,0,0,0.6),
+                0 0 20px #ff6600;
+            letter-spacing: 0.05em;
+            transform: rotate(-2deg);
+            animation: pulse 1.4s infinite alternate;
+            white-space: nowrap;
+            padding: 20px;
+        }
 
-    let a1 = document.getElementById("scream1");
-    a1.volume = 0.6;
-    a1.play();
+        /* Адаптация для мобильных */
+        @media (max-width: 700px) {
+            .huge-text {
+                font-size: 10vw;
+                white-space: normal;
+                word-break: break-word;
+                line-height: 1.2;
+            }
+        }
 
-    // второй скример через секунду (добивает)
-    setTimeout(() => {
-      let a2 = document.getElementById("scream2");
-      a2.volume = 0.7;
-      a2.play();
-    }, 1000);
+        @keyframes pulse {
+            0% {
+                text-shadow: 4px 4px 0 #aa3300, 8px 8px 0 #551100, 0 0 15px #ff6600;
+                transform: rotate(-2deg) scale(1);
+            }
+            100% {
+                text-shadow: 8px 8px 0 #cc4400, 16px 16px 0 #662200, 0 0 40px #ffaa00;
+                transform: rotate(1deg) scale(1.02);
+            }
+        }
 
-  }, 100);
+        /* Подпись-подсказка */
+        .hint {
+            position: fixed;
+            bottom: 25px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-family: monospace;
+            font-size: 1.2rem;
+            color: #ffaa66;
+            background: rgba(0,0,0,0.6);
+            padding: 10px;
+            backdrop-filter: blur(8px);
+            letter-spacing: 1px;
+            font-weight: bold;
+            pointer-events: none;
+            z-index: 10;
+        }
 
-}, 6000);
-</script>
+        /* Эффект тряски при клике */
+        .shake {
+            animation: shakeAnim 0.2s ease-in-out 0s 2;
+        }
+
+        @keyframes shakeAnim {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(5px, -3px) rotate(1deg); }
+            50% { transform: translate(-5px, 2px) rotate(-1deg); }
+            75% { transform: translate(3px, -1px) rotate(0.5deg); }
+            100% { transform: translate(0, 0) rotate(0); }
+        }
+
+        /* Кнопка переозвучивания (небольшая) */
+        .speak-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ff8800;
+            border: none;
+            color: #1a1a2e;
+            font-size: 1.2rem;
+            font-weight: bold;
+            font-family: monospace;
+            padding: 8px 16px;
+            border-radius: 40px;
+            cursor: pointer;
+            z-index: 20;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            transition: 0.1s linear;
+        }
+
+        .speak-btn:active {
+            transform: scale(0.95);
+            background: #ffaa33;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="huge-text" id="mainText">ХАЧ ПОДАВИСЬ ШАУРМОЙ</div>
+    <div class="hint">👇 КЛИКНИ ЛЮБОЕ МЕСТО — УСЛЫШИШЬ ГОЛОС 👇</div>
+    <button class="speak-btn" id="speakBtn">🔊 Озвучить снова</button>
+
+    <script>
+        // Фраза для озвучки
+        const phrase = "ХАЧ ПОДАВИСЬ ШАУРМОЙ";
+
+        // Функция синтеза речи
+        function speakPhrase() {
+            // Проверка поддержки Web Speech API
+            if (!('speechSynthesis' in window)) {
+                alert("Ваш браузер не поддерживает голосовое озвучивание.");
+                return;
+            }
+
+            // Отменяем любую текущую речь, чтобы не накладывалось
+            window.speechSynthesis.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(phrase);
+            utterance.lang = 'ru-RU';       // русский язык
+            utterance.rate = 1.0;            // скорость речи (нормальная)
+            utterance.pitch = 1.1;           // чуть выше для экспрессии
+            utterance.volume = 1;             // максимальная громкость
+
+            // Выбираем голос (по возможности мужской, низкий — для пафоса)
+            // Но оставляем стандартный системный, чтобы гарантированно работало
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Эффект тряски для надписи
+        function shakeText() {
+            const textEl = document.getElementById('mainText');
+            textEl.classList.add('shake');
+            setTimeout(() => {
+                textEl.classList.remove('shake');
+            }, 300);
+        }
+
+        // Обработчик клика по всей странице (озвучиваем + тряска)
+        function onPageClick() {
+            speakPhrase();
+            shakeText();
+        }
+
+        // Добавляем клик на body
+        document.body.addEventListener('click', onPageClick);
+
+        // Отдельная кнопка для повторной озвучки (без дублирования эффекта тряски, но можно и с ней)
+        const btn = document.getElementById('speakBtn');
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();  // чтобы клик по кнопке не вызвал ещё один клик на body
+            speakPhrase();
+            shakeText();
+        });
+
+        // Небольшое пояснение в консоль
+        console.log('Готово! Кликни — и ХАЧ скажет "ПОДАВИСЬ ШАУРМОЙ"');
+    </script>
+</body>
+</html>
